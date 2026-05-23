@@ -1,3 +1,3 @@
 # HOME WORK-02
-##JavaScript
+## JavaScript
 Практика после модуля 38. Функции.
