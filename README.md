@@ -1,2 +1,2 @@
 # Skillfactory 
-## Практика по теме JavaScript
+## Практика по курсу Fullstack-разработчик
