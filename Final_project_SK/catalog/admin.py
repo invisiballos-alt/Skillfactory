@@ -5,36 +5,55 @@ from .models import (
     Machine, Maintenance, Reclamation
 )
 
-# --- Настройка отображения МАШИН ---
 @admin.register(Machine)
 class MachineAdmin(admin.ModelAdmin):
-    # Какие колонки показывать в списке машин
     list_display = ('serial_number', 'vehicle_model', 'engine_model', 'client', 'service_company', 'shipping_date')
-    # По каким полям делать поиск (поиск по зав. номеру машины очень важен)
     search_fields = ('serial_number', 'engine_serial_number', 'consignee')
-    # Фильтры в правой панели админки
     list_filter = ('vehicle_model', 'engine_model', 'service_company')
+    
+    # Группируем поля по блокам (Fieldsets)
+    fieldsets = (
+        ('Техническая спецификация (Доступно Гостю)', {
+            'fields': (
+                'serial_number', 'vehicle_model', 
+                'engine_model', 'engine_serial_number',
+                'transmission_model', 'transmission_serial_number',
+                'drive_axle_model', 'drive_axle_serial_number',
+                'steer_axle_model', 'steer_axle_serial_number',
+                'additional_options' # то самое доп. поле со скриншота!
+            )
+        }),
+        ('Информация о поставке и эксплуатации (Скрыто от Гостя)', {
+            'fields': ('supply_contract', 'shipping_date', 'consignee', 'operation_location')
+        }),
+        ('Управление доступом', {
+            'fields': ('client', 'service_company')
+        }),
+    )
 
-# --- Настройка отображения ТО ---
 @admin.register(Maintenance)
 class MaintenanceAdmin(admin.ModelAdmin):
-    list_display = ('machine', 'type', 'date', 'operating_hours', 'service_company')
+    list_display = ('machine', 'type', 'order_number', 'order_date', 'date', 'service_company')
     search_fields = ('machine__serial_number', 'order_number')
     list_filter = ('type', 'service_company')
+    
+    # Хак: Если зашел автомеханик из сервиса, он не сможет подделать поле сервисной компании
+    def save_model(self, request, obj, form, change):
+        if hasattr(request.user, 'service_profile') and not request.user.is_superuser:
+            obj.service_company = request.user.service_profile
+        super().save_model(request, obj, form, change)
 
-# --- Настройка отображения РЕКЛАМАЦИЙ ---
 @admin.register(Reclamation)
 class ReclamationAdmin(admin.ModelAdmin):
-    list_display = ('machine', 'refusal_date', 'failure_node', 'recovery_method', 'recovery_date', 'get_downtime')
+    list_display = ('machine', 'refusal_date', 'failure_node', 'recovery_date', 'get_downtime')
     search_fields = ('machine__serial_number', 'failure_description')
     list_filter = ('failure_node', 'recovery_method')
 
-    # Выводим наше вычисляемое свойство дней простоя в список
     def get_downtime(self, obj):
         return f"{obj.downtime_days} дн."
     get_downtime.short_description = "Время простоя"
 
-# --- Регистрация простых Справочников (чтобы заполнять их из админки) ---
+# Регистрация справочников (оставляем без изменений)
 admin.site.register(VehicleModel)
 admin.site.register(EngineModel)
 admin.site.register(TransmissionModel)
