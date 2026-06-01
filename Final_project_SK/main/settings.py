@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'catalog'
 ]
 
 MIDDLEWARE = [
@@ -74,8 +75,15 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'silant_db',
+        'USER': 'postgres',
+        'PASSWORD': 'postgre',
+        'HOST': '172.31.96.1',
+        'PORT': '5433',
+        'OPTIONS': {
+            'options': '-c client_encoding=utf8'  # Принудительно включаем UTF-8 для клиента
+        },
     }
 }
 
@@ -102,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
