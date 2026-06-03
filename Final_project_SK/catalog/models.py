@@ -6,12 +6,17 @@ from django.contrib.auth.models import User
 # ==========================================
 
 class BaseDirectory(models.Model):
-    directory_name = models.CharField(max_length=100, verbose_name="Название справочника")
+    directory_name = models.CharField(max_length=100, verbose_name="Название справочника", editable=False)
     name = models.CharField(max_length=100, verbose_name="Название")
     description = models.TextField(blank=True, verbose_name="Описание")
 
     class Meta:
         abstract = True  # Шаблон, не создает отдельную таблицу
+
+    def save(self, *args, **kwargs):
+        if not self.directory_name:
+            self.directory_name = self._meta.verbose_name
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"[{self.directory_name}] {self.name}"
@@ -54,8 +59,8 @@ class ServiceCompany(BaseDirectory):
 
 class Machine(models.Model):
     # Поля 1-10 (Техническая комплектация, доступная Гостю по ТЗ)
-    serial_number = models.CharField(max_length=100, unique=True, verbose_name="Зав. № машины")
     vehicle_model = models.ForeignKey(VehicleModel, on_delete=models.PROTECT, verbose_name="Модель техники")
+    serial_number = models.CharField(max_length=100, unique=True, verbose_name="Зав. № машины")
     engine_model = models.ForeignKey(EngineModel, on_delete=models.PROTECT, verbose_name="Модель двигателя")
     engine_serial_number = models.CharField(max_length=100, verbose_name="Зав. № двигателя")
     transmission_model = models.ForeignKey(TransmissionModel, on_delete=models.PROTECT, verbose_name="Модель трансмиссии")

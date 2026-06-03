@@ -15,7 +15,7 @@ class MachineAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Техническая спецификация (Доступно Гостю)', {
             'fields': (
-                'serial_number', 'vehicle_model', 
+                'vehicle_model', 'serial_number',  
                 'engine_model', 'engine_serial_number',
                 'transmission_model', 'transmission_serial_number',
                 'drive_axle_model', 'drive_axle_serial_number',

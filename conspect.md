@@ -358,3 +358,25 @@ nc -zv 172.31.96.1 5433
 - Экземпляр класса или просто Объект (Instance) - это конкретный кекс. Это физическая запись в базе данных: Погрузчик с заводским номером 0017, двигателем Kubota и владельцем ИП Трудников.
 - В питоне всё является объектом: и класс и словарь и экземпляры класса и переменные, записанные строками.
 - Объекты (экземпляры класса) создаются именно через класс
+
+
+# Django
+
+## models.py
+```python
+class BaseDirectory(models.Model):
+    directory_name = models.CharField(max_length=100, verbose_name="Название справочника", editable=False)
+    name = models.CharField(max_length=100, verbose_name="Название")
+    description = models.TextField(blank=True, verbose_name="Описание")
+
+    class Meta:
+        abstract = True  # Шаблон, не создает отдельную таблицу
+
+    def save(self, *args, **kwargs):
+        if not self.directory_name:
+            self.directory_name = self._meta.verbose_name
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"[{self.directory_name}] {self.name}"
+```
