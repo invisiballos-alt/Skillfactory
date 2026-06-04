@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-5uxasoj(+nk6xd^v9q*v&^_g0!&87xa6mtg2tl7-nom*)3sc_3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -123,6 +123,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
 
 # Отключаем возможность пользователей регистрироваться
 ACCOUNT_ADAPTER = 'catalog.account_adapter.NoSignupAccountAdapter'

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Рекламация по машине №{{ item.machine.serial_number }}</title>
+    <link href="https://jsdelivr.net" rel="stylesheet">
+</head>
+<body class="bg-light py-5">
+    <div class="container bg-white p-4 rounded shadow-sm" style="max-width: 850px;">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+            <h2>Подробности рекламации (отказа)</h2>
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">Назад на главную</a>
+        </div>
+
+        <h4 class="text-danger mb-3">Технический отчет о неисправности</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <th style="width: 35%;">Параметр рекламации</th>
+                    <th>Данные</th>
+                </tr>
+                <tr>
+                    <td><b>Машина (Зав. №):</b></td>
+                    <td>
+                        <a href="{% url 'machine_detail' item.machine.id %}" class="fw-bold text-decoration-none">
+                            {{ item.machine.serial_number }}
+                        </a> 
+                        <span class="text-muted">({{ item.machine.vehicle_model.name }})</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Дата отказа:</b></td>
+                    <td class="text-danger fw-bold">{{ item.refusal_date|date:"d.m.Y" }}</td>
+                </tr>
+                <tr>
+                    <td><b>Наработка, м/час:</b></td>
+                    <td>{{ item.operating_hours }} м/ч</td>
+                </tr>
+                <tr>
+                    <td><b>Узел отказа:</b></td>
+                    <td>
+                        <span class="fw-bold text-uppercase text-dark">{{ item.failure_node.name }}</span>
+                        {% if item.failure_node.description %}
+                            <div class="text-muted small mt-1 border-top pt-1">{{ item.failure_node.description }}</div>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Описание отказа:</b></td>
+                    <td><div class="p-2 bg-light rounded border">{{ item.failure_description }}</div></td>
+                </tr>
+                <tr>
+                    <td><b>Способ восстановления:</b></td>
+                    <td>
+                        <span class="fw-bold">{{ item.recovery_method.name }}</span>
+                        {% if item.recovery_method.description %}
+                            <div class="text-muted small mt-1 border-top pt-1">{{ item.recovery_method.description }}</div>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Используемые з/ч:</b></td>
+                    <td>{{ item.parts_used|default:"<span class="text-muted">Не указаны</span>" }}</td>
+                </tr>
+                <tr>
+                    <td><b>Дата восстановления:</b></td>
+                    <td class="text-success fw-bold">{{ item.recovery_date|date:"d.m.Y" }}</td>
+                </tr>
+                <tr class="table-warning border-warning-subtle">
+                    <td><b>Время простоя техники:</b></td>
+                    <td>
+                        <span class="fw-bold text-dark fs-5">{{ item.downtime_days }}</span> 
+                        {% if item.downtime_days == 1 %}день{% elif item.downtime_days < 5 %}дня{% else %}дней{% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

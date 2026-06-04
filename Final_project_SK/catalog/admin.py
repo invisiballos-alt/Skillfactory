@@ -4,6 +4,8 @@ from .models import (
     MaintenanceType, FailureNode, RecoveryMethod, ServiceCompany,
     Machine, Maintenance, Reclamation
 )
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 @admin.register(Machine)
 class MachineAdmin(admin.ModelAdmin):
@@ -63,3 +65,19 @@ admin.site.register(MaintenanceType)
 admin.site.register(FailureNode)
 admin.site.register(RecoveryMethod)
 admin.site.register(ServiceCompany)
+
+# 1. Отменяем стандартную регистрацию пользователей в админке
+admin.site.unregister(User)
+
+# 2. Создаем кастомный класс для отображения
+@admin.register(User)
+class CustomUserAdmin(BaseUserAdmin):
+    # Этот метод заставляет выпадающие списки ForeignKey показывать имя компании
+    def get_formset(self, request, obj=None, **kwargs):
+        User.__str__ = lambda self_user: self_user.first_name if self_user.first_name else self_user.username
+        return super().get_formset(request, obj, **kwargs)
+
+    # Этот метод меняет отображение в выпадающих списках на обычных формах редактирования
+    def get_queryset(self, request):
+        User.__str__ = lambda self_user: self_user.first_name if self_user.first_name else self_user.username
+        return super().get_queryset(request)

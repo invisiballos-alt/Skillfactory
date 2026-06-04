@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.views import View
+from django.views.generic import DetailView                  # Импортируем базовый класс карточки объекта
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin    # Импортируем защиту страниц от гостей
 from .models import Machine, Maintenance, Reclamation, VehicleModel, EngineModel, TransmissionModel, SteerAxleModel, DriveAxleModel, FailureNode
 
 class HomeView(View):
@@ -87,3 +89,27 @@ class HomeView(View):
             'claims': claims_qs,
         })
         return render(request, 'catalog/index.html', context)
+
+# 1. Карточка машины (Доступна и гостям, но гостям показываем не всё)
+class MachineDetailView(DetailView):
+    model = Machine
+    template_name = 'catalog/machine_detail.html'
+    context_object_name = 'machine'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Передаем статус авторизации, чтобы в HTML скрыть конфиденциальные поля от гостей
+        context['is_authenticated'] = self.request.user.is_authenticated
+        return context
+
+# 2. Карточка ТО (Доступна только авторизованным по ТЗ)
+class MaintenanceDetailView(LoginRequiredMixin, DetailView):
+    model = Maintenance
+    template_name = 'catalog/maintenance_detail.html'
+    context_object_name = 'item'
+
+# 3. Карточка Рекламации (Доступна только авторизованным по ТЗ)
+class ReclamationDetailView(LoginRequiredMixin, DetailView):
+    model = Reclamation
+    template_name = 'catalog/reclamation_detail.html'
+    context_object_name = 'item'

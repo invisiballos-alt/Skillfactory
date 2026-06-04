@@ -380,3 +380,6 @@ class BaseDirectory(models.Model):
     def __str__(self):
         return f"[{self.directory_name}] {self.name}"
 ```
+
+## DetailView 
+Это готовый шаблонный класс (Generic View), написанный разработчиками Django. Он избавляет вас от необходимости писать вручную стандартный код, который повторяется в каждом проекте.
