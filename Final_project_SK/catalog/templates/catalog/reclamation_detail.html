@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Рекламация по машине №{{ item.machine.serial_number }}</title>
-    <link href="https://jsdelivr.net" rel="stylesheet">
 </head>
 <body class="bg-light py-5">
     <div class="container bg-white p-4 rounded shadow-sm" style="max-width: 850px;">
@@ -60,7 +59,7 @@
                 </tr>
                 <tr>
                     <td><b>Используемые з/ч:</b></td>
-                    <td>{{ item.parts_used|default:"<span class="text-muted">Не указаны</span>" }}</td>
+                    <td>{{ item.parts_used|default:"<span class='text-muted'>Не указаны</span>" }}</td>
                 </tr>
                 <tr>
                     <td><b>Дата восстановления:</b></td>

@@ -43,9 +43,9 @@ class HomeView(View):
         # Базовые наборы данных (QuerySets) с сортировкой по умолчанию из ТЗ
         machines_qs = Machine.objects.all().order_by('shipping_date')
         # Предполагаем, что у вас созданы модели Maintenance и Claim со своими датами
-        maintenance_qs = Maintenance.objects.all().order_by('date') if 'Maintenance' in globals() else []
+        maintenance_qs = Maintenance.objects.all().order_by('date')
         
-        claims_qs = Reclamation.objects.all().order_by('refusal_date') if 'Reclamation' in globals() else []
+        claims_qs = Reclamation.objects.all().order_by('refusal_date')
 
         # Фильтрация по ролям пользователей
         if user.groups.filter(name='Менеджеры').exists() or user.is_superuser:
@@ -58,7 +58,7 @@ class HomeView(View):
             if maintenance_qs:
                 maintenance_qs = maintenance_qs.filter(service_company__name__icontains=user.first_name)
             if claims_qs:
-                claims_qs = Reclamation.filter(machine__service_company__name__icontains=user.first_name)
+                claims_qs = Reclamation.objects.filter(machine__service_company__name__icontains=user.first_name)
 
                 
         elif user.groups.filter(name='Клиенты').exists():
@@ -67,7 +67,7 @@ class HomeView(View):
             if maintenance_qs:
                 maintenance_qs = maintenance_qs.filter(machine__client=user)
             if claims_qs:
-                claims_qs = Reclamation.filter(machine__client=user)
+                claims_qs = Reclamation.objects.filter(machine__client=user)
 
         # -----------------------------------------------------------------
         # РЕАЛИЗАЦИЯ ФИЛЬТРОВ ИЗ ТЗ (ДЛЯ ТАБЛИЦЫ МАШИН)

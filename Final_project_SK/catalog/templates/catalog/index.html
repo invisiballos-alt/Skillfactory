@@ -4,31 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Электронная сервисная книжка "Мой Силант"</title>
-    <!-- Подключаем Bootstrap 5 для стилей и вкладок -->
-    <link href="https://jsdelivr.net" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'catalog/css/custom.css' %}">
 
 </head>
-<body class="bg-light">
-
-    <!-- ХЕДЕР ИЗ МАКЕТА -->
-    <header class="bg-white border-bottom py-3 mb-4">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="fw-bold fs-4 text-primary">Логотип "Силант"</div>
-            <div class="text-muted">+7-8352-20-12-09, telegram</div>
-            <div>
+<body>
+    <header>
+        <div>
+            <div>Логотип "Силант"</div>
+            <div >+7-8352-20-12-09, Telegram</div>
+            <div> {% comment %} добавить редирект при логауте {% endcomment %}
                 {% if is_authenticated %}
                     <span class="me-3 fw-bold">{{ request.user.first_name }}</span>
-                    <a href="/accounts/logout/" class="btn btn-outline-danger btn-sm">Выйти</a>
+                    <a href="/accounts/logout/">Выйти</a> 
+                    
                 {% else %}
-                    <a href="/accounts/login/" class="btn btn-primary btn-sm">Авторизация</a>
+                    <a href="/accounts/login/">Авторизация</a>
                 {% endif %}
             </div>
         </div>
     </header>
 
-    <main class="container bg-white p-4 rounded shadow-sm min-vh-100">
-        <h1 class="text-center mb-2">Электронная сервисная книжка "Мой Силант"</h1>
+    <main class="">
+        <h1 class="">Электронная сервисная книжка "Мой Силант"</h1>
 
         {% if not is_authenticated %}
             <!-- ======================================================= -->
@@ -41,19 +38,19 @@
                 <div class="col-md-5">
                     <input type="text" name="search_serial" class="form-control" value="{{ search_query }}" placeholder="Введите заводской номер машины..." required>
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Поиск</button>
+                <div class="">
+                    <button>Поиск</button>
                 </div>
             </form>
 
             <!-- Результат поиска гостя -->
             {% if search_query %}
-                <h4 class="mt-4 border-bottom pb-2">Результат поиска:</h4>
+                <h4 class="">Результат поиска:</h4>
                 {% if machine_found %}
-                    <p class="text-success fw-bold">Информация о комплектации и технических характеристиках Вашей техники:</p>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead class="table-dark">
+                    <p class="">Информация о комплектации и технических характеристиках Вашей техники:</p>
+                    <div class="">
+                        <table class="">
+                            <thead class="">
                                 <tr>
                                     <th>Зав. № машины</th>
                                     <th>Модель техники</th>
@@ -94,15 +91,21 @@
             <!-- ======================================================= -->
             
             <!-- Навигация по вкладкам из ТЗ -->
-            <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
-                <li class="nav-item">
-                    <button class="nav-link active" id="tech-tab" data-bs-toggle="tab" data-bs-target="#tech" type="button">Технические данные</button>
+            <ul class="">
+                <li >
+                    <a >
+                        Технические данные
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <button class="nav-link" id="to-tab" data-bs-toggle="tab" data-bs-target="#to" type="button">ТО</button>
+                <li >
+                    <a class="nav-link" id="to-tab">
+                        ТО
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <button class="nav-link" id="claims-tab" data-bs-toggle="tab" data-bs-target="#claims" type="button">Рекламации</button>
+                <li >
+                    <a class="nav-link" id="claims-tab" >
+                        Рекламации
+                    </a>
                 </li>
             </ul>
 
@@ -131,7 +134,7 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <button type="submit" class="btn btn-secondary btn-sm w-100">Применить</button>
+                            <button id='Submit_btn' class="btn">Применить</button>
                         </div>
                     </form>
 
@@ -170,13 +173,65 @@
                 </div>
 
                 <!-- Вкладка 2: ТО -->
-                <div class="tab-pane fade" id="to">
-                    <p class="text-muted text-center p-4">Здесь будет таблица ТО с вашими данными</p>
+                <div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Зав. № машины</th>
+                                <th>Дата</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for maintenance  in maintenances %}
+                                <tr>
+                                    <td>
+                                        <strong>Техника:</strong><br>
+                                        {{ maintenance.machine }}
+                                    </td>
+                                    <td>{{ maintenance.date }}</td>
+                                    <td>
+                                        <!-- Django автоматически подставит id текущей машины в ссылку -->
+                                        <a href="{% url 'maintenance_detail' maintenance.id %}" class="btn btn-primary">
+
+                                            Открыть карточку
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="2">Машин нет</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
 
+
                 <!-- Вкладка 3: Рекламации -->
-                <div class="tab-pane fade" id="claims">
-                    <p class="text-muted text-center p-4">Здесь будет таблица рекламаций с вашими данными</p>
+                <div id="claims">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Зав. № машины</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for claim  in claims %}
+                                <tr>
+                                    <td>{{ claim.machine }}</td>
+                                    <td>
+                                        <!-- Django автоматически подставит id текущей машины в ссылку -->
+                                        <a href="{% url 'reclamation_detail' claim.id %}" class="btn btn-primary">
+
+                                            Открыть карточку
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="2">Машин нет</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         {% endif %}
@@ -185,3 +240,10 @@
     <!-- ФУТЕР ИЗ МАКЕТА -->
     <footer class="bg-white border-top py-3 mt-5">
         <div class="container d-flex justify-content-between text-muted small">
+            <div>+7-8352-20-12-09, Telegram</div>
+            <div>Мой Силант 2026</div>
+        </div>
+    </footer>
+    
+</body>
+</html>

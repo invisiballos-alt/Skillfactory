@@ -381,5 +381,40 @@ class BaseDirectory(models.Model):
         return f"[{self.directory_name}] {self.name}"
 ```
 
+## views.py
+тут можно прописать логику для разделения прав пользователя, прописать это в *context{}* 
+
+### context{}
+здесь можно прописать в зависимости от прав доступа или от авторизации:
+```Python
+ if not user.is_authenticated:
+            search_query = request.GET.get('search_serial', '').strip()
+            context['search_query'] = search_query
+
+            if search_query:
+                # Ищем машину по точному заводскому номеру
+                machine = Machine.objects.filter(serial_number=search_query).first()
+                if machine:
+                    context['machine_found'] = True
+                    context['machine'] = machine
+                else:
+                    context['machine_found'] = False
+                    context['error_message'] = f"Данных о машине с заводским номером «{search_query}» нет в системе."
+            
+            return render(request, 'catalog/index.html', context)
+``` 
+логику того, как в .html из views.py будет передаваться для отрисовки инфа. Данные передаются тут с помощью render(). render позволяет пользоваться фишками-тегами {} Django, вставляя в html, указанный в аргументе render(), с помощью тегов данные из контекста.
+Шаблоны можно наследовать. Основной шаблон прописывается в index.html. Если внутри index.html написано {% include 'footer.html' %}, то внутри *footer.html* переменная {{ *user* }} тоже будет работать. 
+
 ## DetailView 
 Это готовый шаблонный класс (Generic View), написанный разработчиками Django. Он избавляет вас от необходимости писать вручную стандартный код, который повторяется в каждом проекте.
+
+## urls.py
+Когда вы пишете в консоли python manage.py runserver, Django считывает файл urls.py. В этот миг строка HomeView.as_view() срабатывает и превращает ваш класс в готовую функцию-приёмник.
+Эту созданную функцию Django «запоминает» и вешает на соответствующий URL-адрес.
+urls берет из views объекты и с помощью функции, описанной выше, создаёт на их основе адреса.
+urls связывает адреса с объектами views. В объектах views записаны ссылки на .html файлы, в которых прописано содержание страницы.
+
+# CSS
+/favicon.ico - иконка сайта
+
