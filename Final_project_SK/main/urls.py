@@ -11,6 +11,7 @@ from catalog.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('impersonate/', include('impersonate.urls')),
+    path('accounts/', include('allauth.urls')),
     path('', HomeView.as_view(), name='home'),
     path('machine/<int:pk>/', MachineDetailView.as_view(), name='machine_detail'),
     path('maintenance/<int:pk>/', MaintenanceDetailView.as_view(), name='maintenance_detail'),

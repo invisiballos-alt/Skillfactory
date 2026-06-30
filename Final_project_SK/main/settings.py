@@ -37,9 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'allauth',
+    'allauth.account',
     'catalog',
     'impersonate',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,7 +54,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 ROOT_URLCONF = 'main.urls'
@@ -131,6 +141,15 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
+# Полностью закрываем регистрацию для обычных людей
+ACCOUNT_REGISTRATION_VIEW = None
+ACCOUNT_ADAPTER = 'catalog.account_registration.NoSignupAccountAdapter'
 
-# Отключаем возможность пользователей регистрироваться
-ACCOUNT_ADAPTER = 'catalog.account_adapter.NoSignupAccountAdapter'
+# Настройки перенаправлений, которые мы настроили ранее
+IMPERSONATE_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_ON_GET = True
+# Отключает создание новых аккаунтов через форму регистрации
+ACCOUNT_ALLOW_REGISTRATION = False
+

@@ -15,8 +15,9 @@
             <div> {% comment %} добавить редирект при логауте {% endcomment %}
                 {% if is_authenticated %}
                     <span class="me-3 fw-bold">{{ request.user.first_name }}</span>
-                    <a href="/accounts/logout/">Выйти</a> 
-                    
+                    <!-- НАДО СДЕЛАТЬ ТАК -->
+                    <!-- Django сам подставит правильный адрес для выхода -->
+                    <a href="{% url 'account_logout' %}" class="btn btn-outline-danger btn-sm">Выйти</a>
                 {% else %}
                     <a href="/accounts/login/">Авторизация</a>
                 {% endif %}
