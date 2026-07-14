@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      {% block title %}
+        Силант
+      {% endblock %}
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+  </head>
+
+  <body class="bg-light p-4">
+    <header class="p-1 mb-3 bg-dark text-white">
+      <div class="container-fluid d-flex justify-content-between align-items-center px-5">
+        <div>Логотип "Силант"</div>
+
+        <div>+7-8352-20-12-09, Telegram</div>
+
+        <div>
+          {% if is_authenticated %}
+            <span class="me-3 fw-bold">{{ request.user.first_name }}</span>
+            <a href="{% url 'account_logout' %}" class="btn btn-outline-danger btn-sm">Выйти</a>
+          {% else %}
+            <a href="/accounts/login/" class="btn btn-primary">Авторизация</a>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+    {% block content %}
+      <main class="">
+        <h1 class="text-center">Электронная сервисная книжка "Мой Силант"</h1>
+
+        {% if not is_authenticated %}
+          <!-- ======================================================= -->
+          <!-- ЭКРАН ГОСТЯ (БЕЗ АВТОРИЗАЦИИ) -->
+          <!-- ======================================================= -->
+
+          <span class="d-block text-muted text-center mt-5 mb-2">Проверьте комплектацию и технические характеристики техники Силант</span>
+
+          <!-- Форма поиска -->
+          <form method="get" class="row g-5 justify-content-center mb-4">
+            <div class="col-md-6 col-12">
+              <input type="text" name="search_serial" class="form-control" value="{{ search_query }}" placeholder="Введите заводской номер машины..." required />
+            </div>
+            <div class="col-md-auto col-12">
+              <button type="submit" class="btn btn-primary w-100">Поиск</button>
+            </div>
+          </form>
+
+          <!-- Результат поиска гостя -->
+          {% if search_query %}
+            <h4 class="border-bottom pb-3">Результат поиска:</h4>
+            {% if machine_found %}
+              <p class="text-success fw-bold">Информация о комплектации и технических характеристиках Вашей техники:</p>
+              <div class="">
+                <table class="">
+                  <thead class="">
+                    <tr>
+                      <th>Зав. № машины</th>
+                      <th>Модель техники</th>
+                      <th>Модель двигателя</th>
+                      <th>Зав. № двигателя</th>
+                      <th>Модель трансмиссии</th>
+                      <th>Зав. № трансмиссии</th>
+                      <th>Модель вед. моста</th>
+                      <th>Зав. № вед. моста</th>
+                      <th>Модель упр. моста</th>
+                      <th>Зав. № упр. моста</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ machine.serial_number }}</td>
+                      <td>{{ machine.vehicle_model.name }}</td>
+                      <td>{{ machine.engine_model.name }}</td>
+                      <td>{{ machine.engine_serial_number }}</td>
+                      <td>{{ machine.transmission_model.name }}</td>
+                      <td>{{ machine.transmission_serial_number }}</td>
+                      <td>{{ machine.drive_axle_model.name }}</td>
+                      <td>{{ machine.drive_axle_serial_number }}</td>
+                      <td>{{ machine.steer_axle_model.name }}</td>
+                      <td>{{ machine.steer_axle_serial_number }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="alert alert-danger">{{ error_message }}</div>
+            {% endif %}
+          {% endif %}
+        {% else %}
+          <!-- ======================================================= -->
+          <!-- ЭКРАН АВТОРИЗОВАННОГО ПОЛЬЗОВАТЕЛЯ -->
+          <!-- ======================================================= -->
+
+          <!-- Навигация по вкладкам из ТЗ -->
+          <ul class="">
+            <li>
+              <a>Технические данные</a>
+            </li>
+            <li>
+              <a class="nav-link" id="to-tab">ТО</a>
+            </li>
+            <li>
+              <a class="nav-link" id="claims-tab">Рекламации</a>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="myTabContent">
+            <!-- Вкладка 1: Технические данные (Машины) -->
+            <div class="tab-pane fade show active" id="tech">
+              <!-- Фильтры ТЗ для машин -->
+              <form method="get" class="row g-2 mb-3 bg-light p-3 rounded border">
+                <h5>Фильтрация техники:</h5>
+                <div class="col-md-2">
+                  <select name="f_vehicle" class="form-select form-select-sm">
+                    <option value="">Модель техники</option>
+                    {% for m in vehicle_models %}
+                      <option value="{{ m.id }}">{{ m.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <select name="f_engine" class="form-select form-select-sm">
+                    <option value="">Модель двигателя</option>
+                    {% for m in engine_models %}
+                      <option value="{{ m.id }}">{{ m.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <select name="f_trans" class="form-select form-select-sm">
+                    <option value="">Трансмиссия</option>
+                    {% for m in transmission_models %}
+                      <option value="{{ m.id }}">{{ m.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <button id="Submit_btn" class="btn">Применить</button>
+                </div>
+              </form>
+
+              <!-- Таблица машин -->
+              <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                  <thead class="table-secondary">
+                    <tr>
+                      <th>Зав. № машины</th>
+                      <th>Модель техники</th>
+                      <th>Модель двигателя</th>
+                      <th>Трансмиссия</th>
+                      <th>Дата отгрузки</th>
+                      <th>Покупатель</th>
+                      <th>Сервисная компания</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for machine in machines %}
+                      <!-- Строки кликабельны по ТЗ -->
+                      <tr onclick="window.location.href='/machine/{{ machine.id }}/';" style="cursor:pointer;">
+                        <td>{{ machine.serial_number }}</td>
+                        <td>{{ machine.vehicle_model.name }}</td>
+                        <td>{{ machine.engine_model.name }}</td>
+                        <td>{{ machine.transmission_model.name }}</td>
+                        <td>{{ machine.shipping_date|date:'d.m.Y' }}</td>
+                        <td>{{ machine.client.first_name }}</td>
+                        <td>{{ machine.service_company.name }}</td>
+                      </tr>
+                    {% empty %}
+                      <tr>
+                        <td colspan="7" class="text-center text-muted">Нет доступных машин</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Вкладка 2: ТО -->
+            <div>
+              <button class="btn btn-outline-primary mb-3 d-flex align-items-center" 
+              type="button"
+              data-bs-toggle="collapse" 
+              data-bs-target="#collapseTable">
+
+                <span class=" fw-bold">История технического обслуживания</span>
+
+              </button>
+
+              <table class="table" id="#collapseTable">
+                <thead>
+                  <tr>
+                    <th>Зав. № машины</th>
+                    <th>Дата</th>
+                    <th>Действие</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for maintenance in maintenances %}
+                    <tr>
+                      <td>
+                        <strong>Техника:</strong><br />
+                        {{ maintenance.machine }}
+                      </td>
+                      <td>{{ maintenance.date }}</td>
+                      <td>
+                        <!-- Django автоматически подставит id текущей машины в ссылку -->
+                        <a href="{% url 'maintenance_detail' maintenance.id %}" class="btn btn-primary">Открыть карточку</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="2">Машин нет</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Вкладка 3: Рекламации -->
+            <div id="claims">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Зав. № машины</th>
+                    <th>Действие</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for claim in claims %}
+                    <tr>
+                      <td>{{ claim.machine }}</td>
+                      <td>
+                        <!-- Django автоматически подставит id текущей машины в ссылку -->
+                        <a href="{% url 'reclamation_detail' claim.id %}" class="btn btn-primary">Открыть карточку</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="2">Машин нет</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endif %}
+      </main>
+    {% endblock %}
+
+    <!-- ФУТЕР ИЗ МАКЕТА -->
+    <footer class="bg-white border-top py-3 mt-5">
+      <div class="container d-flex justify-content-between text-muted small">
+        <div>+7-8352-20-12-09, Telegram</div>
+        <div>Мой Силант 2026</div>
+      </div>
+    </footer>
+  </body>
+</html>

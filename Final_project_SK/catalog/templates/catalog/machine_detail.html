@@ -1,97 +1,119 @@
-{% load static %} 
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Машина №{{ machine.serial_number }}</title>
-    <link href="https://jsdelivr.net" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'catalog/css/custom.css' %}">
+{% extends 'catalog/base.html' %}
 
-</head>
-<body class="bg-light py-5">
-    <div class="container bg-white p-4 rounded shadow-sm" style="max-width: 900px;">
-        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
-            <h2>Подробная карточка машины №{{ machine.serial_number }}</h2>
-            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">Назад на главную</a>
-        </div>
+{% block title %}
+  Информация о машине
+{% endblock %}
 
-        <!-- ТЕХНИЧЕСКИЕ ДАННЫЕ (ВИДЯТ ВСЕ: И ГОСТИ, И КЛИЕНТЫ) -->
-        <h4 class="text-primary mb-3">Техническая комплектация</h4>
-        <div class="table-responsive mb-4">
-            <table class="table table-bordered">
-                <tr class="table-light">
-                    <th style="width: 35%;">Узел / Характеристика</th>
-                    <th style="width: 25%;">Значение (Модель)</th>
-                    <th>Описание из справочника</th>
-                </tr>
-                <tr>
-                    <td><b>Модель техники:</b></td>
-                    <td>{{ machine.vehicle_model.name }}</td>
-                    <td class="text-muted small">{{ machine.vehicle_model.description|default:"Описание не заполнено" }}</td>
-                </tr>
-                <tr>
-                    <td><b>Модель двигателя:</b></td>
-                    <td>{{ machine.engine_model.name }} (№{{ machine.engine_serial_number }})</td>
-                    <td class="text-muted small">{{ machine.engine_model.description|default:"Описание не заполнено" }}</td>
-                </tr>
-                <tr>
-                    <td><b>Модель трансмиссии:</b></td>
-                    <td>{{ machine.transmission_model.name }} (№{{ machine.transmission_serial_number }})</td>
-                    <td class="text-muted small">{{ machine.transmission_model.description|default:"Описание не заполнено" }}</td>
-                </tr>
-                <tr>
-                    <td><b>Ведущий мост:</b></td>
-                    <td>{{ machine.drive_axle_model.name }} (№{{ machine.drive_axle_serial_number }})</td>
-                    <td class="text-muted small">{{ machine.drive_axle_model.description|default:"Описание не заполнено" }}</td>
-                </tr>
-                <tr>
-                    <td><b>Управляемый мост:</b></td>
-                    <td>{{ machine.steer_axle_model.name }} (№{{ machine.steer_axle_serial_number }})</td>
-                    <td class="text-muted small">{{ machine.steer_axle_model.description|default:"Описание не заполнено" }}</td>
-                </tr>
-                <tr>
-                    <td><b>Доп. комплектация:</b></td>
-                    <td colspan="2">{{ machine.additional_options }}</td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- КОНФИДЕНЦИАЛЬНЫЕ ДАННЫЕ (СКРЫТЫ ОТ ГОСТЯ, ВИДЯТ ТОЛЬКО АВТОРИЗОВАННЫЕ) -->
-        {% if is_authenticated %}
-            <h4 class="text-danger mb-3">Специфичная информация (Конфиденциально)</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered border-danger-subtle">
-                    <tr>
-                        <td style="width: 35%;"><b>Договор поставки №, дата:</b></td>
-                        <td>{{ machine.supply_contract }}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Дата отгрузки с завода:</b></td>
-                        <td>{{ machine.shipping_date|date:"d.m.Y" }}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Грузополучатель:</b></td>
-                        <td>{{ machine.consignee }}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Место эксплуатации (адрес):</b></td>
-                        <td>{{ machine.operation_location }}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Покупатель (Клиент):</b></td>
-                        <td><span class="badge bg-primary fs-6">{{ machine.client.first_name }}</span></td>
-                    </tr>
-                    <tr>
-                        <td><b>Сервисная компания:</b></td>
-                        <td>{{ machine.service_company.name }}</td>
-                    </tr>
-                </table>
-            </div>
-        {% else %}
-            <div class="alert alert-warning text-center mt-3">
-                Для просмотра коммерческих данных, информации о покупателе, договорах, истории ТО и рекламациях, пожалуйста, <b>авторизуйтесь в системе</b>.
-            </div>
-        {% endif %}
+{% block content %}
+<div class="container bg-white p-4 rounded shadow-sm" style="max-width: 900px;">
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+      <h2>Подробная карточка машины №{{ machine.serial_number }}</h2>
+      <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">Назад на главную</a>
     </div>
-</body>
-</html>
+  
+    <!-- ТЕХНИЧЕСКИЕ ДАННЫЕ (ВИДЯТ ВСЕ: И ГОСТИ, И КЛИЕНТЫ) -->
+    <h4 class="text-primary mb-3">Техническая комплектация</h4>
+    <div class="table-responsive mb-4">
+      <table class="table table-bordered">
+        <tr class="table-light">
+          <th style="width: 35%;">Узел / Характеристика</th>
+          <th style="width: 25%;">Значение (Модель)</th>
+          <th>Описание из справочника</th>
+        </tr>
+        <tr>
+          <td>
+            <b>Модель техники:</b>
+          </td>
+          <td>{{ machine.vehicle_model.name }}</td>
+          <td class="text-muted small">{{ machine.vehicle_model.description|default:'Описание не заполнено' }}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Модель двигателя:</b>
+          </td>
+          <td>{{ machine.engine_model.name }} (№{{ machine.engine_serial_number }})</td>
+          <td class="text-muted small">{{ machine.engine_model.description|default:'Описание не заполнено' }}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Модель трансмиссии:</b>
+          </td>
+          <td>{{ machine.transmission_model.name }} (№{{ machine.transmission_serial_number }})</td>
+          <td class="text-muted small">{{ machine.transmission_model.description|default:'Описание не заполнено' }}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Ведущий мост:</b>
+          </td>
+          <td>{{ machine.drive_axle_model.name }} (№{{ machine.drive_axle_serial_number }})</td>
+          <td class="text-muted small">{{ machine.drive_axle_model.description|default:'Описание не заполнено' }}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Управляемый мост:</b>
+          </td>
+          <td>{{ machine.steer_axle_model.name }} (№{{ machine.steer_axle_serial_number }})</td>
+          <td class="text-muted small">{{ machine.steer_axle_model.description|default:'Описание не заполнено' }}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Доп. комплектация:</b>
+          </td>
+          <td colspan="2">{{ machine.additional_options }}</td>
+        </tr>
+      </table>
+    </div>
+  
+    <!-- КОНФИДЕНЦИАЛЬНЫЕ ДАННЫЕ (СКРЫТЫ ОТ ГОСТЯ, ВИДЯТ ТОЛЬКО АВТОРИЗОВАННЫЕ) -->
+    {% if is_authenticated %}
+      <h4 class="text-danger mb-3">Специфичная информация (Конфиденциально)</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered border-danger-subtle">
+          <tr>
+            <td style="width: 35%;">
+              <b>Договор поставки №, дата:</b>
+            </td>
+            <td>{{ machine.supply_contract }}</td>
+          </tr>
+          <tr>
+            <td>
+              <b>Дата отгрузки с завода:</b>
+            </td>
+            <td>{{ machine.shipping_date|date:'d.m.Y' }}</td>
+          </tr>
+          <tr>
+            <td>
+              <b>Грузополучатель:</b>
+            </td>
+            <td>{{ machine.consignee }}</td>
+          </tr>
+          <tr>
+            <td>
+              <b>Место эксплуатации (адрес):</b>
+            </td>
+            <td>{{ machine.operation_location }}</td>
+          </tr>
+          <tr>
+            <td>
+              <b>Покупатель (Клиент):</b>
+            </td>
+            <td>
+              <span class="badge bg-primary fs-6">{{ machine.client.first_name }}</span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Сервисная компания:</b>
+            </td>
+            <td>{{ machine.service_company.name }}</td>
+          </tr>
+        </table>
+      </div>
+    {% else %}
+      <div class="alert alert-warning text-center mt-3">
+        Для просмотра коммерческих данных, информации о покупателе, договорах, истории ТО и рекламациях, пожалуйста, <b>авторизуйтесь в системе</b>.
+      </div>
+    {% endif %}
+  </div>
+  
+{% endblock %}
