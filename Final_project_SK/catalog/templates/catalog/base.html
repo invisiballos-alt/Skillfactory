@@ -140,6 +140,22 @@
                   </select>
                 </div>
                 <div class="col-md-2">
+                  <select name="f_drive" class="form-select form-select-sm">
+                    <option value="">Ведущий мост</option>
+                    {% for m in drive_models %}
+                      <option value="{{ m.id }}">{{ m.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <select name="f_steer" class="form-select form-select-sm">
+                    <option value="">Управляемый мост</option>
+                    {% for m in steer_models %}
+                      <option value="{{ m.id }}">{{ m.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-2">
                   <button id="Submit_btn" class="btn">Применить</button>
                 </div>
               </form>
@@ -182,14 +198,7 @@
 
             <!-- Вкладка 2: ТО -->
             <div>
-              <button class="btn btn-outline-primary mb-3 d-flex align-items-center" 
-              type="button"
-              data-bs-toggle="collapse" 
-              data-bs-target="#collapseTable">
-
-                <span class=" fw-bold">История технического обслуживания</span>
-
-              </button>
+              <button class="btn btn-outline-primary mb-3 d-flex align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTable"><span class="fw-bold">История технического обслуживания</span></button>
 
               <table class="table" id="#collapseTable">
                 <thead>
