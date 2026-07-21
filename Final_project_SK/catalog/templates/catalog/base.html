@@ -96,167 +96,172 @@
           <!-- ЭКРАН АВТОРИЗОВАННОГО ПОЛЬЗОВАТЕЛЯ -->
           <!-- ======================================================= -->
 
-          <!-- Навигация по вкладкам из ТЗ -->
-          <ul class="">
-            <li>
-              <a>Технические данные</a>
+          <!-- Навигация на ссылках -->
+          <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+              <a class="nav-link {% if not request.GET.tab or request.GET.tab == 'tech' %}active{% endif %}" href="?tab=tech">Технические данные</a>
             </li>
-            <li>
-              <a class="nav-link" id="to-tab">ТО</a>
+            <li class="nav-item">
+              <a class="nav-link {% if request.GET.tab == 'to' %}active{% endif %}" href="?tab=to">ТО</a>
             </li>
-            <li>
-              <a class="nav-link" id="claims-tab">Рекламации</a>
+            <li class="nav-item">
+              <a class="nav-link {% if request.GET.tab == 'claims' %}active{% endif %}" href="?tab=claims">Рекламации</a>
             </li>
           </ul>
 
-          <div class="tab-content" id="myTabContent">
-            <!-- Вкладка 1: Технические данные (Машины) -->
-            <div class="tab-pane fade show active" id="tech">
-              <!-- Фильтры ТЗ для машин -->
-              <form method="get" class="row g-2 mb-3 bg-light p-3 rounded border">
-                <h5>Фильтрация техники:</h5>
-                <div class="col-md-2">
-                  <select name="f_vehicle" class="form-select form-select-sm">
-                    <option value="">Модель техники</option>
-                    {% for m in vehicle_models %}
-                      <option value="{{ m.id }}">{{ m.name }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="col-md-2">
-                  <select name="f_engine" class="form-select form-select-sm">
-                    <option value="">Модель двигателя</option>
-                    {% for m in engine_models %}
-                      <option value="{{ m.id }}">{{ m.name }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="col-md-2">
-                  <select name="f_trans" class="form-select form-select-sm">
-                    <option value="">Трансмиссия</option>
-                    {% for m in transmission_models %}
-                      <option value="{{ m.id }}">{{ m.name }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="col-md-2">
-                  <select name="f_drive" class="form-select form-select-sm">
-                    <option value="">Ведущий мост</option>
-                    {% for m in drive_models %}
-                      <option value="{{ m.id }}">{{ m.name }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="col-md-2">
-                  <select name="f_steer" class="form-select form-select-sm">
-                    <option value="">Управляемый мост</option>
-                    {% for m in steer_models %}
-                      <option value="{{ m.id }}">{{ m.name }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="col-md-2">
-                  <button id="Submit_btn" class="btn">Применить</button>
-                </div>
-              </form>
+          <!-- Контент вкладок (управляется условиями Django) -->
+          <div class="tab-content">
+            {% if not request.GET.tab or request.GET.tab == 'tech' %}
+              <div class="tab-pane active" id="tech">
+                <form method="get" class="row g-2 mb-3 bg-light p-3 rounded border">
+                  <h5>Фильтрация техники:</h5>
+                  <div class="col-md-2">
+                    <select name="f_vehicle" class="form-select form-select-sm">
+                      <option value="">Модель техники</option>
+                      {% for m in vehicle_models %}
+                        <option value="{{ m.id }}">{{ m.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <select name="f_engine" class="form-select form-select-sm">
+                      <option value="">Модель двигателя</option>
+                      {% for m in engine_models %}
+                        <option value="{{ m.id }}">{{ m.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <select name="f_trans" class="form-select form-select-sm">
+                      <option value="">Трансмиссия</option>
+                      {% for m in transmission_models %}
+                        <option value="{{ m.id }}">{{ m.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <select name="f_drive" class="form-select form-select-sm">
+                      <option value="">Ведущий мост</option>
+                      {% for m in drive_models %}
+                        <option value="{{ m.id }}">{{ m.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <select name="f_steer" class="form-select form-select-sm">
+                      <option value="">Управляемый мост</option>
+                      {% for m in steer_models %}
+                        <option value="{{ m.id }}">{{ m.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <button id="Submit_btn" class="btn">Применить</button>
+                  </div>
+                </form>
 
-              <!-- Таблица машин -->
-              <div class="table-responsive">
-                <table class="table table-hover table-bordered">
-                  <thead class="table-secondary">
+                <!-- Таблица машин -->
+                <div class="table-responsive">
+                  <table class="table table-hover table-bordered">
+                    <thead class="table-secondary">
+                      <tr>
+                        <th>Зав. № машины</th>
+                        <th>Модель техники</th>
+                        <th>Модель двигателя</th>
+                        <th>Трансмиссия</th>
+                        <th>Дата отгрузки</th>
+                        <th>Покупатель</th>
+                        <th>Сервисная компания</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for machine in machines %}
+                        <!-- Строки кликабельны по ТЗ -->
+                        <tr onclick="window.location.href='/machine/{{ machine.id }}/';" style="cursor:pointer;">
+                          <td>{{ machine.serial_number }}</td>
+                          <td>{{ machine.vehicle_model.name }}</td>
+                          <td>{{ machine.engine_model.name }}</td>
+                          <td>{{ machine.transmission_model.name }}</td>
+                          <td>{{ machine.shipping_date|date:'d.m.Y' }}</td>
+                          <td>{{ machine.client.first_name }}</td>
+                          <td>{{ machine.service_company.name }}</td>
+                        </tr>
+                      {% empty %}
+                        <tr>
+                          <td colspan="7" class="text-center text-muted">Нет доступных машин</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            {% endif %}
+
+            {% if request.GET.tab == 'to' %}
+              <!-- Вкладка 2: ТО -->
+              <div class="tab-pane active" id="to">
+                <table class="table">
+                  <thead>
                     <tr>
                       <th>Зав. № машины</th>
-                      <th>Модель техники</th>
-                      <th>Модель двигателя</th>
-                      <th>Трансмиссия</th>
-                      <th>Дата отгрузки</th>
-                      <th>Покупатель</th>
-                      <th>Сервисная компания</th>
+                      <th>Дата</th>
+                      <th>Действие</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {% for machine in machines %}
-                      <!-- Строки кликабельны по ТЗ -->
-                      <tr onclick="window.location.href='/machine/{{ machine.id }}/';" style="cursor:pointer;">
-                        <td>{{ machine.serial_number }}</td>
-                        <td>{{ machine.vehicle_model.name }}</td>
-                        <td>{{ machine.engine_model.name }}</td>
-                        <td>{{ machine.transmission_model.name }}</td>
-                        <td>{{ machine.shipping_date|date:'d.m.Y' }}</td>
-                        <td>{{ machine.client.first_name }}</td>
-                        <td>{{ machine.service_company.name }}</td>
+                    {% for maintenance in maintenances %}
+                      <tr>
+                        <td>
+                          <strong>Техника:</strong><br />
+                          {{ maintenance.machine }}
+                        </td>
+                        <td>{{ maintenance.date }}</td>
+                        <td>
+                          <!-- Django автоматически подставит id текущей машины в ссылку -->
+                          <a href="{% url 'maintenance_detail' maintenance.id %}" class="btn btn-primary">Открыть карточку</a>
+                        </td>
                       </tr>
                     {% empty %}
                       <tr>
-                        <td colspan="7" class="text-center text-muted">Нет доступных машин</td>
+                        <td colspan="2">Машин нет</td>
                       </tr>
                     {% endfor %}
                   </tbody>
                 </table>
               </div>
-            </div>
+            {% endif %}
 
-            <!-- Вкладка 2: ТО -->
-            <div>
-              <button class="btn btn-outline-primary mb-3 d-flex align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTable"><span class="fw-bold">История технического обслуживания</span></button>
-
-              <table class="table" id="#collapseTable">
-                <thead>
-                  <tr>
-                    <th>Зав. № машины</th>
-                    <th>Дата</th>
-                    <th>Действие</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for maintenance in maintenances %}
-                    <tr>
-                      <td>
-                        <strong>Техника:</strong><br />
-                        {{ maintenance.machine }}
-                      </td>
-                      <td>{{ maintenance.date }}</td>
-                      <td>
-                        <!-- Django автоматически подставит id текущей машины в ссылку -->
-                        <a href="{% url 'maintenance_detail' maintenance.id %}" class="btn btn-primary">Открыть карточку</a>
-                      </td>
-                    </tr>
-                  {% empty %}
-                    <tr>
-                      <td colspan="2">Машин нет</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Вкладка 3: Рекламации -->
-            <div id="claims">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Зав. № машины</th>
-                    <th>Действие</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for claim in claims %}
-                    <tr>
-                      <td>{{ claim.machine }}</td>
-                      <td>
-                        <!-- Django автоматически подставит id текущей машины в ссылку -->
-                        <a href="{% url 'reclamation_detail' claim.id %}" class="btn btn-primary">Открыть карточку</a>
-                      </td>
-                    </tr>
-                  {% empty %}
-                    <tr>
-                      <td colspan="2">Машин нет</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
+            {% if request.GET.tab == 'claims' %}
+              <div class="tab-pane active" id="claims">
+                <div id="claims">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Зав. № машины</th>
+                        <th>Действие</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for claim in claims %}
+                        <tr>
+                          <td>{{ claim.machine }}</td>
+                          <td>
+                            <!-- Django автоматически подставит id текущей машины в ссылку -->
+                            <a href="{% url 'reclamation_detail' claim.id %}" class="btn btn-primary">Открыть карточку</a>
+                          </td>
+                        </tr>
+                      {% empty %}
+                        <tr>
+                          <td colspan="2">Машин нет</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            {% endif %}
           </div>
+
         {% endif %}
       </main>
     {% endblock %}
